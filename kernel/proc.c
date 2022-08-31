@@ -654,3 +654,52 @@ procdump(void)
     printf("\n");
   }
 }
+int
+showprocs(void)
+{
+  #include <stddef.h>
+
+  struct proc *p;
+  int numProcess = 0;
+
+  for (p = proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock);
+    if(p->pid==1){
+      if(p->state==SLEEPING){
+      printf("%d  0  sleep  %s  %d", p->pid, p->name, p->sz);
+      numProcess++;
+      }
+      else if(p->state==RUNNING){
+        printf("%d  0  running %s  %d", p->pid, p->name,p->sz);
+        numProcess++;
+      }
+      else if(p->state==RUNNABLE){
+        printf("%d  0  runnable  %s  %d", p->pid, p->name,p->sz);
+        numProcess++;
+      }
+      else if(p->state==ZOMBIE){
+        printf("%d  0  zombie  %s  %d", p->pid, p->name,p->sz);
+        numProcess++;
+      }
+    }
+    else if(p->state==SLEEPING){
+      printf("\n%d  %d  sleep  %s  %d", p->pid, p->parent->pid, p->name, p->sz);
+      numProcess++;
+    }
+    else if(p->state==RUNNING){
+      printf("\n%d  %d  running %s  %d", p->pid, p->parent->pid, p->name,p->sz);
+      numProcess++;
+    }
+    else if(p->state==RUNNABLE){
+      printf("\n%d  %d  runnable  %s  %d", p->pid, p->parent->pid, p->name,p->sz);
+      numProcess++;
+    }
+    else if(p->state==ZOMBIE){
+      printf("\n%d  %d  zombie  %s  %d", p->pid, p->parent->pid, p->name,p->sz);
+      numProcess++;
+    }    
+    release(&p->lock);
+  }
+  printf("\nThere are a total of %d processes in the system\n", numProcess);
+  return 22;
+}

@@ -1,3 +1,8 @@
+# AUT --------------------------
+LABNUM=4
+GROUPNUM=71
+#-------------------------------
+
 K=kernel
 U=user
 
@@ -132,6 +137,8 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_testsyscall\
+	$U/_ps\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
@@ -169,4 +176,15 @@ qemu: $K/kernel fs.img
 qemu-gdb: $K/kernel .gdbinit fs.img
 	@echo "*** Now run 'gdb' in another window." 1>&2
 	$(QEMU) $(QEMUOPTS) -S $(QEMUGDB)
+
+# AUT ------------------------------------------------------
+TARBALL = ../lab$(LABNUM)-$(GROUPNUM).tgz
+FILES = ./Makefile ./README ./LICENSE ./$K ./$U ./mkfs
+
+submit:
+	@make clean
+	@rm -f $(TARBALL)
+	@tar czf $(TARBALL) $(FILES)
+	@echo "Submit $(TARBALL) file to Canvas"
+#----------------------------------------------------------
 
